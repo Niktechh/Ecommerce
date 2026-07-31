@@ -11,6 +11,12 @@ import orderRouter from './routes/orderRoute.js'
 //App config
 const app = expres()
 const port = process.env.PORT || 4000
+const allowedOrigins = [
+  "https://ecommerce-six-gold-57.vercel.app",
+  "https://dukkan-admin.vercel.app",
+  "http://localhost:3000",
+  "http://localhost:3001"
+]
 connectDB()
 connectCloudinary()
 
@@ -18,9 +24,18 @@ connectCloudinary()
 
 //middleware
 app.use(expres.json())
-app.use(cors({
-  origin: process.env.FRONTEND_URL
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 //api endpoints
 app.use("/api/user", userRouter)
