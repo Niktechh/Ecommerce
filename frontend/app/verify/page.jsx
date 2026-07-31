@@ -3,12 +3,13 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useContext, useEffect } from "react";
+import { Suspense, useContext, useEffect } from "react";
 import { ShopContext } from "../context/ShopContext";
 import axios from 'axios'
 import { toast } from "react-toastify";
 
-export default function Verify() {
+
+ function VerifyContent() {
   const {token , backendUrl , setcartItems} = useContext(ShopContext);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -18,7 +19,7 @@ export default function Verify() {
 
   const verifyPayment = async()=>{
     try {
-        if(!token)return null;
+        if(!token)return ;
         const response = await axios.post(backendUrl + "/api/order/verifyStripe" , {success , orderId} , {headers:{token}})
         if(response.data.success){
             setcartItems({})
@@ -38,10 +39,19 @@ export default function Verify() {
   
 
 
-  return <div>
-    <Navbar/>
-    Verifying_Payemnt.....
-    <Footer/>
+  return <>
+      <Navbar />
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <p className="text-lg">Verifying Payment...</p>
+      </div>
+      <Footer />
+    </>
+}
 
-  </div>;
+export default function Verify() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <VerifyContent />
+    </Suspense>
+  );
 }
