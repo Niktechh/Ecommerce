@@ -18,7 +18,9 @@ connectCloudinary()
 
 //middleware
 app.use(expres.json())
-app.use(cors())
+app.use(cors({
+  origin: process.env.FRONTEND_URL
+}));
 
 //api endpoints
 app.use("/api/user", userRouter)
